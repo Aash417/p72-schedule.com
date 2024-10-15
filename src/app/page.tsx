@@ -48,7 +48,15 @@ export default function Home() {
                >
                   Read our docs
                </a>
+               <Button>test</Button>
+               <Button variant="destructive">test</Button>
+               <Button variant="muted">test</Button>
+               <Button variant="teritrary">test</Button>
+               <Button variant="ghost">test</Button>
                <Button variant="outline">test</Button>
+               <Button variant="secondary" disabled>
+                  test
+               </Button>
             </div>
          </main>
          <footer className="row-start-3 flex flex-wrap items-center justify-center gap-6">
