@@ -14,19 +14,18 @@ import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { FcGoogle } from 'react-icons/fc';
 import { z } from 'zod';
-
-const formSchema = z.object({
-   email: z.string().trim().email(),
-   password: z.string().min(1, 'Required'),
-});
+import { useLogin } from '../api/use-login';
+import { loginSchema } from '../schemas';
 
 export const SignInCard = () => {
-   const form = useForm<z.infer<typeof formSchema>>({
-      resolver: zodResolver(formSchema),
+   const { mutate } = useLogin();
+   const form = useForm<z.infer<typeof loginSchema>>({
+      resolver: zodResolver(loginSchema),
       defaultValues: { email: '', password: '' },
    });
 
-   const onSubmit = (values: z.infer<typeof formSchema>) => console.log(values);
+   const onSubmit = (values: z.infer<typeof loginSchema>) =>
+      mutate({ json: values });
 
    return (
       <Card className="h-full w-full border-none shadow-none md:w-[487px]">

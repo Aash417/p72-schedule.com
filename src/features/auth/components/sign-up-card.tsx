@@ -20,20 +20,19 @@ import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { FcGoogle } from 'react-icons/fc';
 import { z } from 'zod';
-
-const formSchema = z.object({
-   name: z.string().trim().min(1, 'Required'),
-   email: z.string().trim().email(),
-   password: z.string().min(6, 'Minimum of 6 character required'),
-});
+import { useRegister } from '../api/use-register';
+import { SignUpSchema } from '../schemas';
 
 export const SignUpCard = () => {
-   const form = useForm<z.infer<typeof formSchema>>({
-      resolver: zodResolver(formSchema),
+   const { mutate } = useRegister();
+
+   const form = useForm<z.infer<typeof SignUpSchema>>({
+      resolver: zodResolver(SignUpSchema),
       defaultValues: { name: '', email: '', password: '' },
    });
 
-   const onSubmit = (values: z.infer<typeof formSchema>) => console.log(values);
+   const onSubmit = (values: z.infer<typeof SignUpSchema>) =>
+      mutate({ json: values });
 
    return (
       <Card className="h-full w-full border-none shadow-none md:w-[487px]">
