@@ -1,20 +1,11 @@
-'use client';
-
-import { Button } from '@/components/ui/button';
-import { useCurrent } from '@/features/auth/api/use-current';
-import { useLogout } from '@/features/auth/api/use-logout';
+import { getCurrent } from '@/features/auth/action';
+import UserButton from '@/features/auth/components/user-button';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { redirect } from 'next/navigation';
 
-export default function Home() {
-   const router = useRouter();
-   const { data, isLoading } = useCurrent();
-   const { mutate } = useLogout();
-
-   useEffect(() => {
-      if (!data && !isLoading) router.push('/sign-in');
-   }, [data, isLoading, router]);
+export default async function Home() {
+   const user = await getCurrent();
+   if (!user) redirect('/sign-in');
 
    return (
       <div className="grid min-h-screen grid-rows-[20px_1fr_20px] items-center justify-items-center gap-16 p-8 pb-20 font-[family-name:var(--font-geist-sans)] sm:p-20">
@@ -52,7 +43,8 @@ export default function Home() {
                >
                   Read our docs
                </a>
-               <Button onClick={() => mutate()}>Logout</Button>
+
+               <UserButton />
             </div>
          </main>
          <footer className="row-start-3 flex flex-wrap items-center justify-center gap-6">
