@@ -1,5 +1,6 @@
 import { getCurrent } from '@/features/auth/action';
 import UserButton from '@/features/auth/components/user-button';
+import CreateWorkspaceForm from '@/features/workspaces/components/create-workspace-form';
 import Image from 'next/image';
 import { redirect } from 'next/navigation';
 
@@ -46,6 +47,8 @@ export default async function Home() {
 
                <UserButton />
             </div>
+
+            <CreateWorkspaceForm />
          </main>
          <footer className="row-start-3 flex flex-wrap items-center justify-center gap-6">
             <a

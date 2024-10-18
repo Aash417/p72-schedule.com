@@ -26,9 +26,9 @@ export const SignInCard = () => {
       defaultValues: { email: '', password: '' },
    });
 
-   const onSubmit = (values: z.infer<typeof loginSchema>) =>
+   const onSubmit = (values: z.infer<typeof loginSchema>) => {
       mutate({ json: values });
-
+   };
    return (
       <Card className="h-full w-full border-none shadow-none md:w-[487px]">
          <CardHeader className="flex items-center justify-center p-7 text-center">
