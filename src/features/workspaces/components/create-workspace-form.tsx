@@ -13,19 +13,24 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Avatar, AvatarFallback } from '@radix-ui/react-avatar';
+import { ImageIcon } from 'lucide-react';
+import Image from 'next/image';
+import { useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { useCreateWorkspace } from '../api/use-createWorkspace';
 import { createWorkspacesSchema } from '../schemas';
 
-type Props = {
-   onCancel?: () => void;
-};
+type WorkspaceSchema = typeof createWorkspacesSchema;
 
-export default function CreateWorkspaceForm({ onCancel }: Readonly<Props>) {
+export default function CreateWorkspaceForm({
+   onCancel,
+}: Readonly<{ onCancel?: () => void }>) {
    const { mutate, isPending } = useCreateWorkspace();
+   const fileInputRef = useRef<HTMLInputElement>(null);
 
-   const form = useForm({
+   const form = useForm<z.infer<WorkspaceSchema>>({
       resolver: zodResolver(createWorkspacesSchema),
       defaultValues: {
          name: '',
@@ -33,9 +38,26 @@ export default function CreateWorkspaceForm({ onCancel }: Readonly<Props>) {
    });
 
    function onSubmit(values: z.infer<typeof createWorkspacesSchema>) {
-      mutate({ json: values });
-      form.reset();
+      const finalValues = {
+         ...values,
+         image: values.image instanceof File ? values.image : '',
+      };
+
+      mutate(
+         { form: finalValues },
+         {
+            onSuccess: () => form.reset(),
+         },
+      );
    }
+
+   function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
+      const file = e.target.files?.[0];
+      if (file) {
+         form.setValue('image', file);
+      }
+   }
+
    return (
       <Card className="h-full w-full border-none shadow-none">
          <CardHeader className="flex p-7">
@@ -55,20 +77,77 @@ export default function CreateWorkspaceForm({ onCancel }: Readonly<Props>) {
                      <FormField
                         control={form.control}
                         name="name"
-                        render={({ field }) => {
-                           return (
-                              <FormItem>
-                                 <FormLabel>Workspace Name</FormLabel>
-                                 <FormControl>
-                                    <Input
-                                       {...field}
-                                       placeholder="Enter workspace name"
+                        render={({ field }) => (
+                           <FormItem>
+                              <FormLabel>Workspace Name</FormLabel>
+                              <FormControl>
+                                 <Input
+                                    {...field}
+                                    placeholder="Enter workspace name"
+                                 />
+                              </FormControl>
+                              <FormMessage />
+                           </FormItem>
+                        )}
+                     />
+
+                     <FormField
+                        control={form.control}
+                        name="image"
+                        render={({ field }) => (
+                           <div className="flex flex-col gap-y-2">
+                              <div className="flex items-center gap-x-5">
+                                 {field.value ? (
+                                    <div className="relative size-[72px] overflow-hidden rounded-md">
+                                       <Image
+                                          src={
+                                             field.value instanceof File
+                                                ? URL.createObjectURL(
+                                                     field.value,
+                                                  )
+                                                : field.value
+                                          }
+                                          alt="logo"
+                                          fill
+                                          className="object-cover"
+                                       />
+                                    </div>
+                                 ) : (
+                                    <Avatar className="size-[72px]">
+                                       <AvatarFallback>
+                                          <ImageIcon className="size-[36px] text-neutral-400" />
+                                       </AvatarFallback>
+                                    </Avatar>
+                                 )}
+                                 <div className="flex flex-col">
+                                    <p className="text-sm">Workspace Icon</p>
+                                    <p className="text-sm text-muted-foreground">
+                                       JPG, PNG, SVG or JPEG, max 1mb
+                                    </p>
+                                    <input
+                                       type="file"
+                                       accept=".jpg, .png, .jpeg, .svg"
+                                       className="hidden"
+                                       ref={fileInputRef}
+                                       disabled={isPending}
+                                       onChange={handleImageChange}
                                     />
-                                 </FormControl>
-                                 <FormMessage />
-                              </FormItem>
-                           );
-                        }}
+                                    <Button
+                                       type="button"
+                                       disabled={isPending}
+                                       variant="teritrary"
+                                       size="xs"
+                                       onClick={() =>
+                                          fileInputRef.current?.click()
+                                       }
+                                       className="mt-2 w-fit"
+                                    >
+                                       Upload Image
+                                    </Button>
+                                 </div>
+                              </div>
+                           </div>
+                        )}
                      />
                   </div>
                   <DottedSeparator className="py-7" />
@@ -83,6 +162,7 @@ export default function CreateWorkspaceForm({ onCancel }: Readonly<Props>) {
                      >
                         Cancel
                      </Button>
+
                      <Button size="lg" disabled={isPending}>
                         Create Workspace
                      </Button>

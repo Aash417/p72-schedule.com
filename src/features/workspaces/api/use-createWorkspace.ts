@@ -12,8 +12,8 @@ export function useCreateWorkspace() {
    const router = useRouter();
 
    const mutation = useMutation<ResponseType, Error, RequestType>({
-      mutationFn: async ({ json }) => {
-         const response = await client.api.workspaces['$post']({ json });
+      mutationFn: async ({ form }) => {
+         const response = await client.api.workspaces['$post']({ form });
          return await response.json();
       },
       onSuccess: () => {
