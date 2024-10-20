@@ -16,6 +16,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Avatar, AvatarFallback } from '@radix-ui/react-avatar';
 import { ImageIcon } from 'lucide-react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -27,6 +28,7 @@ type WorkspaceSchema = typeof createWorkspacesSchema;
 export default function CreateWorkspaceForm({
    onCancel,
 }: Readonly<{ onCancel?: () => void }>) {
+   const router = useRouter();
    const { mutate, isPending } = useCreateWorkspace();
    const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -46,7 +48,10 @@ export default function CreateWorkspaceForm({
       mutate(
          { form: finalValues },
          {
-            onSuccess: () => form.reset(),
+            onSuccess: ({ data }) => {
+               form.reset();
+               router.push(`/workspaces/${data.$id}`);
+            },
          },
       );
    }

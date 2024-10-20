@@ -2,17 +2,17 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 
-interface WorkspaceAvatarProps {
+type WorkspaceAvatarProps = {
    image?: string;
    name: string;
    className?: string;
-}
+};
 
 export default function WorkspaceAvatar({
    image,
    name,
    className,
-}: WorkspaceAvatarProps) {
+}: Readonly<WorkspaceAvatarProps>) {
    if (image) {
       return (
          <div

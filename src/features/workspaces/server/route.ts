@@ -5,12 +5,12 @@ import {
    WORKSPACES_ID,
 } from '@/config';
 import { sessionMiddleware } from '@/lib/session-middleware';
-import { MemberRole } from '@/lib/types';
 import { generateInviteCode } from '@/lib/utils';
 import { zValidator } from '@hono/zod-validator';
 import { Hono } from 'hono';
 import { ID, Query } from 'node-appwrite';
 import { createWorkspacesSchema } from '../schemas';
+import { MemberRole } from '../types';
 
 const app = new Hono()
    .get('/', sessionMiddleware, async (c) => {
