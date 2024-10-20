@@ -24,9 +24,11 @@ import { FcGoogle } from 'react-icons/fc';
 import { z } from 'zod';
 import { useRegister } from '../api/use-register';
 import { SignUpSchema } from '../schemas';
+import { useRouter } from 'next/navigation';
 
 export const SignUpCard = () => {
    const { mutate, isPending } = useRegister();
+   const router = useRouter();
 
    const form = useForm<z.infer<typeof SignUpSchema>>({
       resolver: zodResolver(SignUpSchema),
@@ -37,7 +39,10 @@ export const SignUpCard = () => {
       mutate(
          { json: values },
          {
-            onSuccess: () => form.reset(),
+            onSuccess: () => {
+               form.reset();
+               router.replace('/');
+            },
          },
       );
 
