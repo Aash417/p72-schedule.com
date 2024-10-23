@@ -7,7 +7,7 @@ import { usePathname } from 'next/navigation';
 
 type Props = { children: React.ReactNode };
 
-export default function Layout({ children }: Props) {
+export default function Layout({ children }: Readonly<Props>) {
    const pathname = usePathname();
    const isSignIn = pathname === '/sign-in';
    return (

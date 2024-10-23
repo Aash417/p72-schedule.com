@@ -18,7 +18,9 @@ export function useCreateWorkspace() {
       },
       onSuccess: () => {
          toast.success('Workspace created');
-         queryClient.invalidateQueries({ queryKey: ['workspaces'] });
+         queryClient.invalidateQueries({
+            queryKey: ['workspaces', 'workspace'],
+         });
          router.refresh();
       },
       onError: () => {
