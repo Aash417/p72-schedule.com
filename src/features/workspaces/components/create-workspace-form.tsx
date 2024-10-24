@@ -12,6 +12,8 @@ import {
    FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { useCreateWorkspace } from '@/features/workspaces/api/use-createWorkspace';
+import { createWorkspacesSchema } from '@/features/workspaces/schemas';
 import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Avatar, AvatarFallback } from '@radix-ui/react-avatar';
@@ -21,8 +23,6 @@ import { useRouter } from 'next/navigation';
 import { useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { useCreateWorkspace } from '../api/use-createWorkspace';
-import { createWorkspacesSchema } from '../schemas';
 
 type WorkspaceSchema = typeof createWorkspacesSchema;
 
@@ -109,8 +109,8 @@ export default function CreateWorkspaceForm({
                                           src={
                                              field.value instanceof File
                                                 ? URL.createObjectURL(
-                                                     field.value,
-                                                  )
+                                                   field.value,
+                                                )
                                                 : field.value
                                           }
                                           alt="logo"

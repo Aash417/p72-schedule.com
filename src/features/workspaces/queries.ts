@@ -6,7 +6,7 @@ import { Workspace } from './types';
 
 export async function getWorkspaces() {
    try {
-      const { account, databases } = await createSessionClient()
+      const { account, databases } = await createSessionClient();
       const user = await account.get();
       const members = await databases.listDocuments(DATABASE_ID, MEMBERS_ID, [
          Query.equal('userId', user.$id),
@@ -35,7 +35,7 @@ type Props = {
 
 export async function getWorkspace({ workspaceId }: Props) {
    try {
-      const { account, databases } = await createSessionClient()
+      const { account, databases } = await createSessionClient();
       const user = await account.get();
       const member = await getMember({
          userId: user.$id,
