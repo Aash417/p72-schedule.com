@@ -12,20 +12,22 @@ import {
    FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { cn } from '@/lib/utils';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Avatar, AvatarFallback } from '@radix-ui/react-avatar';
-import { ArrowLeftIcon, ImageIcon } from 'lucide-react';
-import Image from 'next/image';
-import { useRouter } from 'next/navigation';
-import { useRef } from 'react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
+import { useDeleteWorkspace } from '@/features/workspaces/api/use-deleteWorkspace';
 import { useUpdateWorkspace } from '@/features/workspaces/api/use-updateWorkspace';
 import { updateWorkspacesSchema } from '@/features/workspaces/schemas';
 import { Workspace } from '@/features/workspaces/types';
 import UseConfirm from '@/hooks/use-confirm';
-import { useDeleteWorkspace } from '@/features/workspaces/api/use-deleteWorkspace';
+import { cn } from '@/lib/utils';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Avatar, AvatarFallback } from '@radix-ui/react-avatar';
+import { ArrowLeftIcon, CopyIcon, ImageIcon } from 'lucide-react';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { useRef } from 'react';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+import { z } from 'zod';
+import { useResetInviteCode } from '../api/use-resetInviteCode';
 
 type WorkspaceSchema = typeof updateWorkspacesSchema;
 type EditWorkspaceFormProps = {
@@ -38,16 +40,26 @@ export default function EditWorkspaceForm({
    initialValues,
 }: Readonly<EditWorkspaceFormProps>) {
    const router = useRouter();
-   const { mutate: updateWorkspace, isPending: isUpdatingWorkspace } =
-      useUpdateWorkspace();
    const fileInputRef = useRef<HTMLInputElement>(null);
-   const [ConfirmationDialog, confirm] = UseConfirm(
+   const fullInviteLink = `${window.location.origin}/workspaces/${initialValues.$id}/join/${initialValues.inviteCode}`;
+
+   const [DeleteDialog, confirmDelete] = UseConfirm(
       'Delete Workspace',
       'This action cannot be undone',
       'destructive',
    );
+   const [ResetDialog, confirmReset] = UseConfirm(
+      'Reset invite link',
+      'This will invalidate the current invite link',
+      'destructive',
+   );
+
+   const { mutate: updateWorkspace, isPending: isUpdatingWorkspace } =
+      useUpdateWorkspace();
    const { mutate: deleteWorkspace, isPending: isDeletingWorkspace } =
       useDeleteWorkspace();
+   const { mutate: resetInviteCode, isPending: isResetingInviteCode } =
+      useResetInviteCode();
 
    const form = useForm<z.infer<WorkspaceSchema>>({
       resolver: zodResolver(updateWorkspacesSchema),
@@ -82,7 +94,7 @@ export default function EditWorkspaceForm({
    }
 
    async function handleDelte() {
-      const ok = await confirm();
+      const ok = await confirmDelete();
       if (!ok) return;
       deleteWorkspace(
          { param: { workspaceId: initialValues.$id } },
@@ -94,9 +106,29 @@ export default function EditWorkspaceForm({
       );
    }
 
+   async function handleResetInviteCode() {
+      const ok = await confirmReset();
+      if (!ok) return;
+      resetInviteCode(
+         { param: { workspaceId: initialValues.$id } },
+         {
+            onSuccess: () => {
+               router.refresh();
+            },
+         },
+      );
+   }
+
+   function handleCopyInviteLink() {
+      navigator.clipboard
+         .writeText(fullInviteLink)
+         .then(() => toast.success('Invite link copied'));
+   }
+
    return (
       <div className="flex flex-col gap-y-4">
-         <ConfirmationDialog />
+         <DeleteDialog />
+         <ResetDialog />
          <Card className="h-full w-full border-none shadow-none">
             <CardHeader className="flex flex-row items-center gap-x-4 space-y-0 p-7">
                <Button
@@ -247,11 +279,50 @@ export default function EditWorkspaceForm({
          <Card className="h-full w-full border-none shadow-none">
             <CardContent className="p-7">
                <div className="flex flex-col">
+                  <h3 className="font-bold">Invite members</h3>
+                  <p className="text-sm text-muted-foreground">
+                     Use the invite link to add member to your workspace.
+                  </p>
+                  <div className="mt-4">
+                     <div className="flex items-center gap-x-2">
+                        <Input disabled value={fullInviteLink} />
+                        <Button
+                           className="size-12"
+                           variant="secondary"
+                           onClick={handleCopyInviteLink}
+                        >
+                           <CopyIcon />
+                        </Button>
+                     </div>
+                  </div>
+                  <DottedSeparator className="py-7" />
+                  <Button
+                     className="ml-auto mt-6 w-fit"
+                     size="sm"
+                     variant="destructive"
+                     type="button"
+                     disabled={
+                        isUpdatingWorkspace ||
+                        isDeletingWorkspace ||
+                        isResetingInviteCode
+                     }
+                     onClick={handleResetInviteCode}
+                  >
+                     Reset invite link
+                  </Button>
+               </div>
+            </CardContent>
+         </Card>
+
+         <Card className="h-full w-full border-none shadow-none">
+            <CardContent className="p-7">
+               <div className="flex flex-col">
                   <h3 className="font-bold">Danger zone</h3>
                   <p className="text-sm text-muted-foreground">
                      Deleting a workspace is a irreversible and will remove all
                      associated data
                   </p>
+                  <DottedSeparator className="py-7" />
                   <Button
                      className="ml-auto mt-6 w-fit"
                      size="sm"

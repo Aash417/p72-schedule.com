@@ -44,13 +44,13 @@ export async function getWorkspace({ workspaceId }: Props) {
       });
       if (!member) return null;
 
-      const workspaces = await databases.getDocument<Workspace>(
+      const workspace = await databases.getDocument<Workspace>(
          DATABASE_ID,
          WORKSPACES_ID,
          workspaceId,
       );
 
-      return workspaces;
+      return { ...workspace, inviteCode: member.inviteCode };
    } catch (error) {
       console.log(error);
       return null;

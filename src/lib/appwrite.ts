@@ -10,7 +10,7 @@ export async function createSessionClient() {
       .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT!);
 
    const session = cookies().get(AUTH_COOKIE);
-   if (!session || !session.value) throw new Error('Unauthorized request');
+   if (!session?.value) throw new Error('Unauthorized request');
 
    client.setSession(session.value);
 
