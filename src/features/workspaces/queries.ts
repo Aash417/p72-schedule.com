@@ -50,7 +50,28 @@ export async function getWorkspace({ workspaceId }: Props) {
          workspaceId,
       );
 
-      return { ...workspace, inviteCode: member.inviteCode };
+      return workspace;
+   } catch (error) {
+      console.log(error);
+      return null;
+   }
+}
+
+type WorkspaceInfoProps = {
+   workspaceId: string;
+};
+
+export async function getWorkspaceInfo({ workspaceId }: WorkspaceInfoProps) {
+   try {
+      const { databases } = await createSessionClient();
+
+      const workspace = await databases.getDocument<Workspace>(
+         DATABASE_ID,
+         WORKSPACES_ID,
+         workspaceId,
+      );
+
+      return { name: workspace.name };
    } catch (error) {
       console.log(error);
       return null;

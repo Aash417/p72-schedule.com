@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useDeleteWorkspace } from '@/features/workspaces/api/use-deleteWorkspace';
+import { useResetInviteCode } from '@/features/workspaces/api/use-resetInviteCode';
 import { useUpdateWorkspace } from '@/features/workspaces/api/use-updateWorkspace';
 import { updateWorkspacesSchema } from '@/features/workspaces/schemas';
 import { Workspace } from '@/features/workspaces/types';
@@ -27,7 +28,6 @@ import { useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
-import { useResetInviteCode } from '../api/use-resetInviteCode';
 
 type WorkspaceSchema = typeof updateWorkspacesSchema;
 type EditWorkspaceFormProps = {
@@ -93,7 +93,7 @@ export default function EditWorkspaceForm({
       }
    }
 
-   async function handleDelte() {
+   async function handleDelete() {
       const ok = await confirmDelete();
       if (!ok) return;
       deleteWorkspace(
@@ -185,8 +185,8 @@ export default function EditWorkspaceForm({
                                              src={
                                                 field.value instanceof File
                                                    ? URL.createObjectURL(
-                                                      field.value,
-                                                   )
+                                                        field.value,
+                                                     )
                                                    : field.value
                                              }
                                              alt="logo"
@@ -329,7 +329,7 @@ export default function EditWorkspaceForm({
                      variant="destructive"
                      type="button"
                      disabled={isUpdatingWorkspace || isDeletingWorkspace}
-                     onClick={handleDelte}
+                     onClick={handleDelete}
                   >
                      Delete workspace
                   </Button>

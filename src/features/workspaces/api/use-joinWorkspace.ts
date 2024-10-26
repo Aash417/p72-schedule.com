@@ -5,41 +5,35 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
 type ResponseType = InferResponseType<
-   (typeof client.api.workspaces)[':workspaceId']['$patch'],
+   (typeof client.api.workspaces)[':workspaceId']['join']['$post'],
    200
 >;
 type RequestType = InferRequestType<
-   (typeof client.api.workspaces)[':workspaceId']['$patch']
+   (typeof client.api.workspaces)[':workspaceId']['join']['$post']
 >;
 
-export function useUpdateWorkspace() {
+export function useJoinWorkspace() {
    const queryClient = useQueryClient();
    const router = useRouter();
 
    const mutation = useMutation<ResponseType, Error, RequestType>({
-      mutationFn: async ({ form, param }) => {
-         const response = await client.api.workspaces[':workspaceId']['$patch'](
-            { form, param },
-         );
+      mutationFn: async ({ param, json }) => {
+         const response = await client.api.workspaces[':workspaceId']['join'][
+            '$post'
+         ]({ param, json });
+         if (!response.ok) throw new Error('Failed to join workspace');
 
-         // Handle the error case
-         if (response.status !== 200) {
-            const errorResponse = (await response.json()) as { error: string };
-            throw new Error(errorResponse.error);
-         }
-
-         // Handle the success case
          return await response.json();
       },
       onSuccess: ({ data }) => {
-         toast.success('Workspace updated');
+         toast.success('Joined workspace');
          queryClient.invalidateQueries({
             queryKey: ['workspaces', 'workspace', data.$id],
          });
          router.refresh();
       },
       onError: () => {
-         toast.error('Failed to update workspace');
+         toast.error('Failed to join workspace');
       },
    });
 
