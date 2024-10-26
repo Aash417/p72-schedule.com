@@ -7,7 +7,7 @@ export function useCurrent() {
       queryFn: async () => {
          const response = await client.api.auth.current.$get();
 
-         if (!response) return null;
+         if (!response.ok) return null;
 
          const { data } = await response.json();
          return data;

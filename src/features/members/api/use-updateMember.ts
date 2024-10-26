@@ -5,28 +5,34 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
 type ResponseType = InferResponseType<
-   (typeof client.api.auth.register)['$post']
+   (typeof client.api.members)[':memberId']['$patch'],
+   200
 >;
-type RequestType = InferRequestType<(typeof client.api.auth.register)['$post']>;
+type RequestType = InferRequestType<
+   (typeof client.api.members)[':memberId']['$patch']
+>;
 
-export function useRegister() {
+export function useUpdateMember() {
    const queryClient = useQueryClient();
    const router = useRouter();
 
    const mutation = useMutation<ResponseType, Error, RequestType>({
-      mutationFn: async ({ json }) => {
-         const response = await client.api.auth.register['$post']({ json });
-         if (!response.ok) throw new Error('failed to register');
+      mutationFn: async ({ param, json }) => {
+         const response = await client.api.members[':memberId']['$patch']({
+            param,
+            json,
+         });
+         if (!response.ok) throw new Error('Failed to update member');
 
          return await response.json();
       },
       onSuccess: () => {
-         toast.success('Register successfully');
-         queryClient.invalidateQueries({ queryKey: ['current'] });
+         toast.success('Member updated');
+         queryClient.invalidateQueries({ queryKey: ['members'] });
          router.refresh();
       },
       onError: () => {
-         toast.error('Failed to register');
+         toast.error('Failed to update member');
       },
    });
 

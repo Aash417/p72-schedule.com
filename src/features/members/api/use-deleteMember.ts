@@ -5,28 +5,33 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
 type ResponseType = InferResponseType<
-   (typeof client.api.auth.register)['$post']
+   (typeof client.api.members)[':memberId']['$delete'],
+   200
 >;
-type RequestType = InferRequestType<(typeof client.api.auth.register)['$post']>;
+type RequestType = InferRequestType<
+   (typeof client.api.members)[':memberId']['$delete']
+>;
 
-export function useRegister() {
+export function useDeleteMember() {
    const queryClient = useQueryClient();
    const router = useRouter();
 
    const mutation = useMutation<ResponseType, Error, RequestType>({
-      mutationFn: async ({ json }) => {
-         const response = await client.api.auth.register['$post']({ json });
-         if (!response.ok) throw new Error('failed to register');
+      mutationFn: async ({ param }) => {
+         const response = await client.api.members[':memberId']['$delete']({
+            param,
+         });
+         if (!response.ok) throw new Error('Failed to delete member');
 
          return await response.json();
       },
       onSuccess: () => {
-         toast.success('Register successfully');
-         queryClient.invalidateQueries({ queryKey: ['current'] });
+         toast.success('Member deleted');
+         queryClient.invalidateQueries({ queryKey: ['members'] });
          router.refresh();
       },
       onError: () => {
-         toast.error('Failed to register');
+         toast.error('Failed to delete member');
       },
    });
 

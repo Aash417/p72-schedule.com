@@ -22,11 +22,7 @@ export function useUpdateWorkspace() {
             { form, param },
          );
 
-         // Handle the error case
-         if (response.status !== 200) {
-            const errorResponse = (await response.json()) as { error: string };
-            throw new Error(errorResponse.error);
-         }
+         if (!response.ok) throw new Error('Failed to update workspaces');
 
          // Handle the success case
          return await response.json();
