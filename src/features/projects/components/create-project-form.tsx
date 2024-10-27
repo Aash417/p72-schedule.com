@@ -12,8 +12,9 @@ import {
    FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { useCreateWorkspace } from '@/features/workspaces/api/use-createWorkspace';
-import { createWorkspacesSchema } from '@/features/workspaces/schemas';
+import { useCreateProject } from '@/features/projects/api/use-createProject';
+import { createProjectsSchema } from '@/features/projects/schemas';
+import { useWorkspaceId } from '@/features/workspaces/hooks/use-workspace-id';
 import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Avatar, AvatarFallback } from '@radix-ui/react-avatar';
@@ -24,24 +25,26 @@ import { useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-export default function CreateWorkspaceForm({
+export default function CreateProjectForm({
    onCancel,
 }: Readonly<{ onCancel?: () => void }>) {
    const router = useRouter();
-   const { mutate, isPending } = useCreateWorkspace();
+   const workspaceId = useWorkspaceId();
+   const { mutate, isPending } = useCreateProject();
    const fileInputRef = useRef<HTMLInputElement>(null);
 
-   const form = useForm<z.infer<typeof createWorkspacesSchema>>({
-      resolver: zodResolver(createWorkspacesSchema),
+   const form = useForm<z.infer<typeof createProjectsSchema>>({
+      resolver: zodResolver(createProjectsSchema.omit({ workspaceId: true })),
       defaultValues: {
          name: '',
       },
    });
 
-   function onSubmit(values: z.infer<typeof createWorkspacesSchema>) {
+   function onSubmit(values: z.infer<typeof createProjectsSchema>) {
       const finalValues = {
          ...values,
          image: values.image instanceof File ? values.image : '',
+         workspaceId,
       };
 
       mutate(
@@ -49,7 +52,8 @@ export default function CreateWorkspaceForm({
          {
             onSuccess: ({ data }) => {
                form.reset();
-               router.push(`/workspaces/${data.$id}`);
+               router.push(`/workspaces/${workspaceId}`);
+               // todo: redirect to project screen
             },
          },
       );
@@ -66,7 +70,7 @@ export default function CreateWorkspaceForm({
       <Card className="h-full w-full border-none shadow-none">
          <CardHeader className="flex p-7">
             <CardTitle className="text-xl font-bold">
-               Create a new workspace
+               Create a new project
             </CardTitle>
          </CardHeader>
 
@@ -83,11 +87,11 @@ export default function CreateWorkspaceForm({
                         name="name"
                         render={({ field }) => (
                            <FormItem>
-                              <FormLabel>Workspace Name</FormLabel>
+                              <FormLabel>Project Name</FormLabel>
                               <FormControl>
                                  <Input
                                     {...field}
-                                    placeholder="Enter workspace name"
+                                    placeholder="Enter project name"
                                  />
                               </FormControl>
                               <FormMessage />
@@ -124,7 +128,7 @@ export default function CreateWorkspaceForm({
                                     </Avatar>
                                  )}
                                  <div className="flex flex-col">
-                                    <p className="text-sm">Workspace Icon</p>
+                                    <p className="text-sm">Project Icon</p>
                                     <p className="text-sm text-muted-foreground">
                                        JPG, PNG, SVG or JPEG, max 1mb
                                     </p>
@@ -186,7 +190,7 @@ export default function CreateWorkspaceForm({
                      </Button>
 
                      <Button size="lg" disabled={isPending}>
-                        Create Workspace
+                        Create Porject
                      </Button>
                   </div>
                </form>
