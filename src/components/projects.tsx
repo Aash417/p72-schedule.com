@@ -10,7 +10,6 @@ import { usePathname } from 'next/navigation';
 import { RiAddCircleFill } from 'react-icons/ri';
 
 export default function Projects() {
-   const projectId = null; //todo add hook useProject id
    const workspaceId = useWorkspaceId();
    const pathname = usePathname();
    const { data } = useGetProjects({ workspaceId });
@@ -28,11 +27,11 @@ export default function Projects() {
          </div>
 
          {data?.documents.map((project) => {
-            const href = `/workspaces/${workspaceId}/projects/${projectId}`;
+            const href = `/workspaces/${workspaceId}/projects/${project.$id}`;
             const isActive = pathname === href;
 
             return (
-               <Link href={href}>
+               <Link href={href} key={project.$id}>
                   <div
                      className={cn(
                         'flex cursor-pointer items-center gap-2.5 rounded-md p-2.5 text-neutral-500 transition hover:opacity-75',

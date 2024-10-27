@@ -6,7 +6,6 @@ export async function getCurrent() {
 
       return await account.get();
    } catch (error) {
-      console.log(error);
       return null;
    }
 }

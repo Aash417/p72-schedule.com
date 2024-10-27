@@ -5,28 +5,21 @@ import { Query } from 'node-appwrite';
 import { Workspace } from './types';
 
 export async function getWorkspaces() {
-   try {
-      const { account, databases } = await createSessionClient();
-      const user = await account.get();
-      const members = await databases.listDocuments(DATABASE_ID, MEMBERS_ID, [
-         Query.equal('userId', user.$id),
-      ]);
-      if (members.total === 0) return { documents: [], total: 0 };
+   const { account, databases } = await createSessionClient();
+   const user = await account.get();
+   const members = await databases.listDocuments(DATABASE_ID, MEMBERS_ID, [
+      Query.equal('userId', user.$id),
+   ]);
+   if (members.total === 0) return { documents: [], total: 0 };
 
-      const workspaceIds = members.documents.map(
-         (member) => member.workspaceId,
-      );
-      const workspaces = await databases.listDocuments(
-         DATABASE_ID,
-         WORKSPACES_ID,
-         [Query.contains('$id', workspaceIds), Query.orderDesc('$createdAt')],
-      );
+   const workspaceIds = members.documents.map((member) => member.workspaceId);
+   const workspaces = await databases.listDocuments(
+      DATABASE_ID,
+      WORKSPACES_ID,
+      [Query.contains('$id', workspaceIds), Query.orderDesc('$createdAt')],
+   );
 
-      return workspaces;
-   } catch (error) {
-      console.log(error);
-      return { documents: [], total: 0 };
-   }
+   return workspaces;
 }
 
 type Props = {
@@ -34,27 +27,22 @@ type Props = {
 };
 
 export async function getWorkspace({ workspaceId }: Props) {
-   try {
-      const { account, databases } = await createSessionClient();
-      const user = await account.get();
-      const member = await getMember({
-         userId: user.$id,
-         workspaceId,
-         databases,
-      });
-      if (!member) return null;
+   const { account, databases } = await createSessionClient();
+   const user = await account.get();
+   const member = await getMember({
+      userId: user.$id,
+      workspaceId,
+      databases,
+   });
+   if (!member) throw new Error('unauthorized');
 
-      const workspace = await databases.getDocument<Workspace>(
-         DATABASE_ID,
-         WORKSPACES_ID,
-         workspaceId,
-      );
+   const workspace = await databases.getDocument<Workspace>(
+      DATABASE_ID,
+      WORKSPACES_ID,
+      workspaceId,
+   );
 
-      return workspace;
-   } catch (error) {
-      console.log(error);
-      return null;
-   }
+   return workspace;
 }
 
 type WorkspaceInfoProps = {
@@ -62,18 +50,13 @@ type WorkspaceInfoProps = {
 };
 
 export async function getWorkspaceInfo({ workspaceId }: WorkspaceInfoProps) {
-   try {
-      const { databases } = await createSessionClient();
+   const { databases } = await createSessionClient();
 
-      const workspace = await databases.getDocument<Workspace>(
-         DATABASE_ID,
-         WORKSPACES_ID,
-         workspaceId,
-      );
+   const workspace = await databases.getDocument<Workspace>(
+      DATABASE_ID,
+      WORKSPACES_ID,
+      workspaceId,
+   );
 
-      return { name: workspace.name };
-   } catch (error) {
-      console.log(error);
-      return null;
-   }
+   return { name: workspace.name };
 }
