@@ -189,7 +189,7 @@ export default function CreateProjectForm({
                      </Button>
 
                      <Button size="lg" disabled={isPending}>
-                        Create Porject
+                        Create Project
                      </Button>
                   </div>
                </form>
