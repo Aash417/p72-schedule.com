@@ -10,6 +10,8 @@ import { useTaskFilters } from '@/features/tasks/hooks/use-task-filters';
 import { useWorkspaceId } from '@/features/workspaces/hooks/use-workspace-id';
 import { Loader, PlusIcon } from 'lucide-react';
 import { useQueryState } from 'nuqs';
+import { DataTable } from './data-table';
+import { columns } from './columns';
 
 export default function TaskViewSwitcher() {
    const { open } = useCreateTaskModal();
@@ -68,7 +70,10 @@ export default function TaskViewSwitcher() {
             ) : (
                <>
                   <TabsContent value="table" className="mt-0">
-                     {JSON.stringify(tasks)}{' '}
+                     <DataTable
+                        columns={columns}
+                        data={tasks?.documents ?? []}
+                     />
                   </TabsContent>
                   <TabsContent value="kanban" className="mt-0">
                      Data Kanban
