@@ -31,6 +31,7 @@ const app = new Hono()
          const databases = c.get('databases');
          const { status, search, dueDate, assigneeId, projectId, workspaceId } =
             c.req.valid('query');
+
          const member = await getMember({
             databases,
             workspaceId,
@@ -43,26 +44,11 @@ const app = new Hono()
             Query.orderDesc('$createdAt'),
          ];
 
-         if (projectId) {
-            console.log('projectId : ', projectId);
-            query.push(Query.equal('projectId', projectId));
-         }
-         if (status) {
-            console.log('status : ', status);
-            query.push(Query.equal('status', status));
-         }
-         if (assigneeId) {
-            console.log('assigneeId : ', assigneeId);
-            query.push(Query.equal('assigneeId', assigneeId));
-         }
-         if (dueDate) {
-            console.log('dueDate : ', dueDate);
-            query.push(Query.equal('dueDate', dueDate));
-         }
-         if (search) {
-            console.log('search : ', search);
-            query.push(Query.equal('name', search));
-         }
+         if (projectId) query.push(Query.equal('projectId', projectId));
+         if (status) query.push(Query.equal('status', status));
+         if (assigneeId) query.push(Query.equal('assigneeId', assigneeId));
+         if (dueDate) query.push(Query.equal('dueDate', dueDate));
+         if (search) query.push(Query.equal('name', search));
 
          const tasks = await databases.listDocuments(
             DATABASE_ID,
@@ -96,7 +82,6 @@ const app = new Hono()
             const assignee = assignees.find(
                (assignee) => assignee.$id === task.assigneeId,
             );
-
             return { ...task, project, assignee };
          });
 

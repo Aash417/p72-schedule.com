@@ -48,7 +48,7 @@ export default function WorkspaceSwitcher() {
                            name={workspace.name}
                            image={workspace.imageUrl}
                         />
-                        <span>{workspace.name}</span>
+                        <span className="truncate">{workspace.name}</span>
                      </div>
                   </SelectItem>
                ))}

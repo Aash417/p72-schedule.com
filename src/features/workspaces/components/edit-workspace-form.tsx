@@ -21,6 +21,7 @@ import UseConfirm from '@/hooks/use-confirm';
 import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Avatar, AvatarFallback } from '@radix-ui/react-avatar';
+import { useQueryClient } from '@tanstack/react-query';
 import { ArrowLeftIcon, CopyIcon, ImageIcon } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -41,6 +42,7 @@ export default function EditWorkspaceForm({
 }: Readonly<EditWorkspaceFormProps>) {
    const router = useRouter();
    const fileInputRef = useRef<HTMLInputElement>(null);
+   const queryClient = useQueryClient();
    const fullInviteLink = `${window.location.origin}/workspaces/${initialValues.$id}/join/${initialValues.inviteCode}`;
 
    const [DeleteDialog, confirmDelete] = UseConfirm(
@@ -80,7 +82,10 @@ export default function EditWorkspaceForm({
          {
             onSuccess: ({ data }) => {
                form.reset();
-               router.push(`/workspaces/${data.$id}`);
+               queryClient.invalidateQueries({
+                  queryKey: ['workspaces', 'workspace', data.$id],
+               });
+               router.refresh();
             },
          },
       );
