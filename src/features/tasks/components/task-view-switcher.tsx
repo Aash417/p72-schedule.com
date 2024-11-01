@@ -3,15 +3,15 @@
 import { DottedSeparator } from '@/components/dotted-separator';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useGetTasks } from '@/features/tasks/api/use-getTask';
+import { useGetTasks } from '@/features/tasks/api/use-getTasks';
 import DataFilters from '@/features/tasks/components/data-filters';
 import { useCreateTaskModal } from '@/features/tasks/hooks/use-create-task-modal';
 import { useTaskFilters } from '@/features/tasks/hooks/use-task-filters';
 import { useWorkspaceId } from '@/features/workspaces/hooks/use-workspace-id';
 import { Loader, PlusIcon } from 'lucide-react';
 import { useQueryState } from 'nuqs';
-import { DataTable } from './data-table';
 import { columns } from './columns';
+import { DataTable } from './data-table';
 
 export default function TaskViewSwitcher() {
    const { open } = useCreateTaskModal();

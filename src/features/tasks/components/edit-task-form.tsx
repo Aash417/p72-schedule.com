@@ -22,42 +22,46 @@ import {
 } from '@/components/ui/select';
 import MemberAvatar from '@/features/members/components/member-avatar';
 import ProjectAvatar from '@/features/projects/components/project-avatar';
-import { useCreateTask } from '@/features/tasks/api/use-createTask';
 import { createTasksSchema } from '@/features/tasks/schemas';
-import { TaskStatus } from '@/features/tasks/types';
-import { useWorkspaceId } from '@/features/workspaces/hooks/use-workspace-id';
+import { Tasks, TaskStatus } from '@/features/tasks/types';
 import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+import { useUpdateTask } from '../api/use-updateTask';
 
 type Props = {
    onCancel?: () => void;
    projectOptions: { id: string; name: string; imageUrl: string }[];
    memberOptions: { id: string; name: string }[];
+   initialValues: Tasks;
 };
 
-export default function CreateTaskForm({
+export default function EditTaskForm({
    onCancel,
    projectOptions,
    memberOptions,
+   initialValues,
 }: Readonly<Props>) {
-   const workspaceId = useWorkspaceId();
-
    const queryClient = useQueryClient();
-   const { mutate, isPending } = useCreateTask();
+   const { mutate: updateTask, isPending } = useUpdateTask();
 
    const form = useForm<z.infer<typeof createTasksSchema>>({
-      resolver: zodResolver(createTasksSchema.omit({ workspaceId: true })),
+      resolver: zodResolver(
+         createTasksSchema.omit({ workspaceId: true, description: true }),
+      ),
       defaultValues: {
-         workspaceId,
+         ...initialValues,
+         dueDate: initialValues.dueDate
+            ? new Date(initialValues.dueDate)
+            : undefined,
       },
    });
 
    function onSubmit(values: z.infer<typeof createTasksSchema>) {
-      mutate(
-         { json: { ...values, workspaceId } },
+      updateTask(
+         { json: values, param: { taskId: initialValues.$id } },
          {
             onSuccess: () => {
                form.reset();
@@ -71,9 +75,7 @@ export default function CreateTaskForm({
    return (
       <Card className="h-full w-full border-none shadow-none">
          <CardHeader className="flex p-7">
-            <CardTitle className="text-xl font-bold">
-               Create a new task
-            </CardTitle>
+            <CardTitle className="text-xl font-bold">Edit a task</CardTitle>
          </CardHeader>
 
          <div className="px-7">
@@ -245,7 +247,7 @@ export default function CreateTaskForm({
                      </Button>
 
                      <Button size="lg" disabled={isPending}>
-                        Create Task
+                        Save changes
                      </Button>
                   </div>
                </form>
