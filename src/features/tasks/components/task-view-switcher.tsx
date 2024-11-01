@@ -12,6 +12,7 @@ import { Loader, PlusIcon } from 'lucide-react';
 import { useQueryState } from 'nuqs';
 import { columns } from './columns';
 import { DataTable } from './data-table';
+import DataKanban from './data-kanban';
 
 export default function TaskViewSwitcher() {
    const { open } = useCreateTaskModal();
@@ -76,7 +77,7 @@ export default function TaskViewSwitcher() {
                      />
                   </TabsContent>
                   <TabsContent value="kanban" className="mt-0">
-                     Data Kanban
+                     <DataKanban data={tasks?.documents ?? []} />
                   </TabsContent>
                   <TabsContent value="calender" className="mt-0">
                      Data Calender
