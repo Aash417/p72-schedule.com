@@ -8,7 +8,7 @@ export enum TaskStatus {
    DONE = 'DONE',
 }
 
-export type Tasks = Models.Document & {
+export type Task = Models.Document & {
    name: string;
    workspaceId: string;
    projectId: string;

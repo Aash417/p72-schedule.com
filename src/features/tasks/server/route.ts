@@ -2,7 +2,7 @@ import { DATABASE_ID, MEMBERS_ID, PROJECTS_ID, TASKS_ID } from '@/config';
 import { getMember } from '@/features/members/utils';
 import { Projects } from '@/features/projects/types';
 import { createTasksSchema } from '@/features/tasks/schemas';
-import { Tasks, TaskStatus } from '@/features/tasks/types';
+import { Task, TaskStatus } from '@/features/tasks/types';
 import { createAdminClient } from '@/lib/appwrite';
 import { sessionMiddleware } from '@/lib/session-middleware';
 import { zValidator } from '@hono/zod-validator';
@@ -50,7 +50,7 @@ const app = new Hono()
          if (dueDate) query.push(Query.equal('dueDate', dueDate));
          if (search) query.push(Query.equal('name', search));
 
-         const tasks = await databases.listDocuments<Tasks>(
+         const tasks = await databases.listDocuments<Task>(
             DATABASE_ID,
             TASKS_ID,
             query,
@@ -143,7 +143,7 @@ const app = new Hono()
       const databases = c.get('databases');
       const { taskId } = c.req.param();
 
-      const task = await databases.getDocument<Tasks>(
+      const task = await databases.getDocument<Task>(
          DATABASE_ID,
          TASKS_ID,
          taskId,
@@ -173,7 +173,7 @@ const app = new Hono()
          const { name, status, dueDate, assigneeId, projectId, description } =
             c.req.valid('json');
 
-         const exitstingTask = await databases.getDocument<Tasks>(
+         const exitstingTask = await databases.getDocument<Task>(
             DATABASE_ID,
             TASKS_ID,
             taskId,
@@ -209,7 +209,7 @@ const app = new Hono()
       const { users } = await createAdminClient();
       const { taskId } = c.req.param();
 
-      const task = await databases.getDocument<Tasks>(
+      const task = await databases.getDocument<Task>(
          DATABASE_ID,
          TASKS_ID,
          taskId,
@@ -247,6 +247,71 @@ const app = new Hono()
             assignee,
          },
       });
-   });
+   })
+   .post(
+      '/bulk-update',
+      sessionMiddleware,
+      zValidator(
+         'json',
+         z.object({
+            tasks: z.array(
+               z.object({
+                  $id: z.string(),
+                  status: z.nativeEnum(TaskStatus),
+                  position: z
+                     .number()
+                     .int()
+                     .positive()
+                     .min(1000)
+                     .max(1_000_000),
+               }),
+            ),
+         }),
+      ),
+      async (c) => {
+         const databases = c.get('databases');
+         const user = c.get('user');
+         const { tasks } = c.req.valid('json');
+
+         const tasksToUpdate = await databases.listDocuments<Task>(
+            DATABASE_ID,
+            TASKS_ID,
+            [
+               Query.contains(
+                  '$id',
+                  tasks.map((task) => task.$id),
+               ),
+            ],
+         );
+
+         const workspaceIds = new Set(
+            tasksToUpdate.documents.map((task) => task.workspaceId),
+         );
+         if (workspaceIds.size !== 1)
+            return c.json({
+               error: 'all task must belong to the same workshop',
+            });
+
+         const workspaceId = workspaceIds.values().next().value!;
+         const member = await getMember({
+            databases,
+            workspaceId,
+            userId: user.$id,
+         });
+         if (!member) return c.json({ error: 'unauthorized' }, 401);
+
+         const updatedTasks = await Promise.all(
+            tasks.map(async (task) => {
+               const { $id, status, position } = task;
+               return databases.updateDocument(DATABASE_ID, TASKS_ID, $id, {
+                  status,
+                  position,
+               });
+            }),
+         );
+
+         return c.json({ data: updatedTasks });
+      },
+   );
 
 export default app;

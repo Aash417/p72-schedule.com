@@ -22,20 +22,20 @@ import {
 } from '@/components/ui/select';
 import MemberAvatar from '@/features/members/components/member-avatar';
 import ProjectAvatar from '@/features/projects/components/project-avatar';
+import { useUpdateTask } from '@/features/tasks/api/use-updateTask';
 import { createTasksSchema } from '@/features/tasks/schemas';
-import { Tasks, TaskStatus } from '@/features/tasks/types';
+import { Task, TaskStatus } from '@/features/tasks/types';
 import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { useUpdateTask } from '../api/use-updateTask';
 
 type Props = {
    onCancel?: () => void;
    projectOptions: { id: string; name: string; imageUrl: string }[];
    memberOptions: { id: string; name: string }[];
-   initialValues: Tasks;
+   initialValues: Task;
 };
 
 export default function EditTaskForm({

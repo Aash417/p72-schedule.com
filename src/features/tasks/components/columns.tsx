@@ -4,14 +4,14 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import MemberAvatar from '@/features/members/components/member-avatar';
 import ProjectAvatar from '@/features/projects/components/project-avatar';
-import { Tasks } from '@/features/tasks/types';
+import TaskAction from '@/features/tasks/components/task-actions';
+import TaskDate from '@/features/tasks/components/task-date';
+import { Task } from '@/features/tasks/types';
 import { snakeCaseToTitleCase } from '@/lib/utils';
 import { ColumnDef } from '@tanstack/react-table';
 import { ArrowUpDown, MoreVertical } from 'lucide-react';
-import TaskAction from './task-actions';
-import TaskDate from './task-date';
 
-export const columns: ColumnDef<Tasks>[] = [
+export const columns: ColumnDef<Task>[] = [
    {
       accessorKey: 'name',
       header: ({ column }) => {
