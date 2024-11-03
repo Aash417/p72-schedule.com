@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useBuldUpdateTask } from '@/features/tasks/api/use-bulkUpdateTask';
 import { useGetTasks } from '@/features/tasks/api/use-getTasks';
 import { columns } from '@/features/tasks/components/columns';
+import DataCalendar from '@/features/tasks/components/data-calendar';
 import DataFilters from '@/features/tasks/components/data-filters';
 import DataKanban from '@/features/tasks/components/data-kanban';
 import DataTable from '@/features/tasks/components/data-table';
@@ -94,7 +95,7 @@ export default function TaskViewSwitcher() {
                      />
                   </TabsContent>
                   <TabsContent value="calender" className="mt-0">
-                     Data Calender
+                     <DataCalendar data={tasks?.documents ?? []} />
                   </TabsContent>
                </>
             )}

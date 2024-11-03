@@ -1,6 +1,6 @@
 import { DATABASE_ID, PROJECTS_ID } from '@/config';
 import { getMember } from '@/features/members/utils';
-import { Projects } from '@/features/projects/types';
+import { Project } from '@/features/projects/types';
 import { createSessionClient } from '@/lib/appwrite';
 
 type Props = {
@@ -11,7 +11,7 @@ export async function getProject({ projectId }: Props) {
    const { account, databases } = await createSessionClient();
    const user = await account.get();
 
-   const project = await databases.getDocument<Projects>(
+   const project = await databases.getDocument<Project>(
       DATABASE_ID,
       PROJECTS_ID,
       projectId,

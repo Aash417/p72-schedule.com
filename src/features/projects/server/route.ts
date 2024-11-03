@@ -4,12 +4,12 @@ import {
    createProjectsSchema,
    updateProjectsSchema,
 } from '@/features/projects/schemas';
+import { Project } from '@/features/projects/types';
 import { sessionMiddleware } from '@/lib/session-middleware';
 import { zValidator } from '@hono/zod-validator';
 import { Hono } from 'hono';
 import { ID, Query } from 'node-appwrite';
 import { z } from 'zod';
-import { Projects } from '../types';
 
 const app = new Hono()
    .get(
@@ -97,7 +97,7 @@ const app = new Hono()
          const { projectId } = c.req.param();
          const { name, image } = c.req.valid('form');
 
-         const existingProject = await databases.getDocument<Projects>(
+         const existingProject = await databases.getDocument<Project>(
             DATABASE_ID,
             PROJECTS_ID,
             projectId,
@@ -144,7 +144,7 @@ const app = new Hono()
       const user = c.get('user');
       const { projectId } = c.req.param();
 
-      const existingProject = await databases.getDocument<Projects>(
+      const existingProject = await databases.getDocument<Project>(
          DATABASE_ID,
          PROJECTS_ID,
          projectId,

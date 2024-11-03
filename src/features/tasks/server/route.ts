@@ -1,6 +1,6 @@
 import { DATABASE_ID, MEMBERS_ID, PROJECTS_ID, TASKS_ID } from '@/config';
 import { getMember } from '@/features/members/utils';
-import { Projects } from '@/features/projects/types';
+import { Project } from '@/features/projects/types';
 import { createTasksSchema } from '@/features/tasks/schemas';
 import { Task, TaskStatus } from '@/features/tasks/types';
 import { createAdminClient } from '@/lib/appwrite';
@@ -58,7 +58,7 @@ const app = new Hono()
          const projectIds = tasks.documents.map((task) => task.projectId);
          const assigneeIds = tasks.documents.map((task) => task.assigneeId);
 
-         const projects = await databases.listDocuments<Projects>(
+         const projects = await databases.listDocuments<Project>(
             DATABASE_ID,
             PROJECTS_ID,
             projectIds.length > 0 ? [Query.contains('$id', projectIds)] : [],

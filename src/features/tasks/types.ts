@@ -17,3 +17,8 @@ export type Task = Models.Document & {
    position: number;
    status: TaskStatus;
 };
+
+export type Assignee = Models.Document & {
+   name: string;
+   email: string;
+};

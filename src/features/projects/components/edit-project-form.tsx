@@ -15,7 +15,7 @@ import { Input } from '@/components/ui/input';
 import { useDeleteProject } from '@/features/projects/api/use-deleteProject';
 import { useUpdateProject } from '@/features/projects/api/use-updateProject';
 import { updateProjectsSchema } from '@/features/projects/schemas';
-import { Projects } from '@/features/projects/types';
+import { Project } from '@/features/projects/types';
 import UseConfirm from '@/hooks/use-confirm';
 import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -29,7 +29,7 @@ import { z } from 'zod';
 
 type Props = {
    onCancel?: () => void;
-   initialValues: Projects;
+   initialValues: Project;
 };
 
 export default function EditProjectForm({
@@ -151,8 +151,8 @@ export default function EditProjectForm({
                                              src={
                                                 field.value instanceof File
                                                    ? URL.createObjectURL(
-                                                        field.value,
-                                                     )
+                                                      field.value,
+                                                   )
                                                    : field.value
                                              }
                                              alt="logo"
