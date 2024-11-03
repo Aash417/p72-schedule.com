@@ -7,12 +7,11 @@ import {
    DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useDeleteTask } from '@/features/tasks/api/use-deleteTask';
+import { useEditTaskModal } from '@/features/tasks/hooks/use-edit-task-modal';
 import { useWorkspaceId } from '@/features/workspaces/hooks/use-workspace-id';
 import useConfirm from '@/hooks/use-confirm';
-import { useQueryClient } from '@tanstack/react-query';
 import { ExternalLinkIcon, PencilIcon, TrashIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useEditTaskModal } from '../hooks/use-edit-task-modal';
 
 type Props = {
    id: string;
@@ -24,26 +23,19 @@ export default function TaskAction({ id, projectId, children }: Props) {
    const router = useRouter();
    const workspaceId = useWorkspaceId();
 
+   const { mutate: deleteTask, isPending: isDeletingTask } = useDeleteTask();
    const { open } = useEditTaskModal();
-
    const [DeleteDialog, confirmDelete] = useConfirm(
       'Delete Task',
       'This action cannot be undone',
       'destructive',
    );
-   const { mutate: deleteTask, isPending: isDeletingTask } = useDeleteTask();
-   const queryClient = useQueryClient();
 
    async function handleDelete() {
       const ok = await confirmDelete();
       if (!ok) return;
-      deleteTask(
-         { param: { taskId: id } },
-         {
-            onSuccess: () =>
-               queryClient.invalidateQueries({ queryKey: ['tasks'] }),
-         },
-      );
+
+      deleteTask({ param: { taskId: id } });
    }
 
    const onOpenTask = () =>

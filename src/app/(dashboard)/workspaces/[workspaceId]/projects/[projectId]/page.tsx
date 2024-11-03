@@ -42,7 +42,7 @@ export default async function Page({ params }: Props) {
                </Button>
             </div>
          </div>
-         <TaskViewSwitcher />
+         <TaskViewSwitcher hideProjectFilter />
       </div>
    );
 }

@@ -27,7 +27,6 @@ import { createTasksSchema } from '@/features/tasks/schemas';
 import { Task, TaskStatus } from '@/features/tasks/types';
 import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -44,7 +43,6 @@ export default function EditTaskForm({
    memberOptions,
    initialValues,
 }: Readonly<Props>) {
-   const queryClient = useQueryClient();
    const { mutate: updateTask, isPending } = useUpdateTask();
 
    const form = useForm<z.infer<typeof createTasksSchema>>({
@@ -66,7 +64,6 @@ export default function EditTaskForm({
             onSuccess: () => {
                form.reset();
                onCancel?.();
-               queryClient.invalidateQueries({ queryKey: ['tasks'] });
             },
          },
       );

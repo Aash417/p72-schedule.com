@@ -1,5 +1,5 @@
 import { client } from '@/lib/rpc';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { InferRequestType, InferResponseType } from 'hono';
 import { toast } from 'sonner';
 
@@ -12,6 +12,8 @@ type RequestType = InferRequestType<
 >;
 
 export function useDeleteTask() {
+   const queryclient = useQueryClient();
+
    const mutation = useMutation<ResponseType, Error, RequestType>({
       mutationFn: async ({ param }) => {
          const response = await client.api.tasks[':taskId']['$delete']({
@@ -23,6 +25,7 @@ export function useDeleteTask() {
       },
       onSuccess: () => {
          toast.success('Task deleted');
+         queryclient.invalidateQueries({ queryKey: ['tasks'] });
       },
       onError: () => {
          toast.error('Failed to delete task');

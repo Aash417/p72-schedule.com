@@ -1,11 +1,7 @@
 'use client';
 
-import { Loader } from 'lucide-react';
+import PageLoader from '@/components/page-loader';
 
 export default function Loading() {
-   return (
-      <div className="flex h-screen flex-col items-center justify-center">
-         <Loader className="size-8 animate-spin text-muted-foreground" />
-      </div>
-   );
+   return <PageLoader />;
 }

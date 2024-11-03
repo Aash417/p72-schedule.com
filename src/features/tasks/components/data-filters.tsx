@@ -16,7 +16,11 @@ import { TaskStatus } from '@/features/tasks/types';
 import { useWorkspaceId } from '@/features/workspaces/hooks/use-workspace-id';
 import { FolderIcon, ListChecksIcon, UserIcon } from 'lucide-react';
 
-export default function DataFilters() {
+type Props = {
+   hideProjectFilter?: boolean;
+};
+
+export default function DataFilters({ hideProjectFilter }: Props) {
    const workspaceId = useWorkspaceId();
    const { data: projects, isLoading: isLoadingProjects } = useGetProjects({
       workspaceId,
@@ -109,31 +113,32 @@ export default function DataFilters() {
          </Select>
 
          {/* Project filter  */}
-         <Select
-            defaultValue={projectId ?? undefined}
-            onValueChange={(value) => {
-               onProjectChange(value);
-            }}
-         >
-            <SelectTrigger className="h-8 w-full lg:w-auto">
-               <div className="flex items-center pr-2">
-                  <FolderIcon className="mr-2 size-4" />
-                  <SelectValue placeholder="All projects" />
-               </div>
-            </SelectTrigger>
+         {!hideProjectFilter && (
+            <Select
+               defaultValue={projectId ?? undefined}
+               onValueChange={(value) => {
+                  onProjectChange(value);
+               }}
+            >
+               <SelectTrigger className="h-8 w-full lg:w-auto">
+                  <div className="flex items-center pr-2">
+                     <FolderIcon className="mr-2 size-4" />
+                     <SelectValue placeholder="All projects" />
+                  </div>
+               </SelectTrigger>
 
-            <SelectContent>
-               <SelectItem value="all">All project</SelectItem>
-               <SelectSeparator />
-               {projectOptions?.map((project) => (
-                  <SelectItem key={project.value} value={project.value}>
-                     {' '}
-                     {project.label}
-                  </SelectItem>
-               ))}
-            </SelectContent>
-         </Select>
-
+               <SelectContent>
+                  <SelectItem value="all">All project</SelectItem>
+                  <SelectSeparator />
+                  {projectOptions?.map((project) => (
+                     <SelectItem key={project.value} value={project.value}>
+                        {' '}
+                        {project.label}
+                     </SelectItem>
+                  ))}
+               </SelectContent>
+            </Select>
+         )}
          {/* Date filter */}
          <DatePicker
             onDueDateChange={onDueDateChange}

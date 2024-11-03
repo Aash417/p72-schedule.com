@@ -151,8 +151,8 @@ export default function EditProjectForm({
                                              src={
                                                 field.value instanceof File
                                                    ? URL.createObjectURL(
-                                                      field.value,
-                                                   )
+                                                        field.value,
+                                                     )
                                                    : field.value
                                              }
                                              alt="logo"
