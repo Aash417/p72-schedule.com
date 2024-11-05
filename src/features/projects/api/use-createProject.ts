@@ -1,7 +1,6 @@
 import { client } from '@/lib/rpc';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { InferRequestType, InferResponseType } from 'hono';
-import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
 type ResponseType = InferResponseType<
@@ -12,7 +11,6 @@ type RequestType = InferRequestType<(typeof client.api.projects)['$post']>;
 
 export function useCreateProject() {
    const queryClient = useQueryClient();
-   const router = useRouter();
 
    const mutation = useMutation<ResponseType, Error, RequestType>({
       mutationFn: async ({ form }) => {
@@ -23,10 +21,7 @@ export function useCreateProject() {
       },
       onSuccess: () => {
          toast.success('Project created');
-         queryClient.invalidateQueries({
-            queryKey: ['projects'],
-         });
-         router.refresh();
+         queryClient.invalidateQueries({ queryKey: ['projects'] });
       },
       onError: () => {
          toast.error('Failed to create project');

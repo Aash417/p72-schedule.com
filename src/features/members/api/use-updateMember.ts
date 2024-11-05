@@ -1,7 +1,6 @@
 import { client } from '@/lib/rpc';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { InferRequestType, InferResponseType } from 'hono';
-import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
 type ResponseType = InferResponseType<
@@ -14,7 +13,6 @@ type RequestType = InferRequestType<
 
 export function useUpdateMember() {
    const queryClient = useQueryClient();
-   const router = useRouter();
 
    const mutation = useMutation<ResponseType, Error, RequestType>({
       mutationFn: async ({ param, json }) => {
@@ -29,7 +27,6 @@ export function useUpdateMember() {
       onSuccess: () => {
          toast.success('Member updated');
          queryClient.invalidateQueries({ queryKey: ['members'] });
-         router.refresh();
       },
       onError: () => {
          toast.error('Failed to update member');

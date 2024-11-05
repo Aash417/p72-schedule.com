@@ -15,9 +15,9 @@ import {
 } from './ui/select';
 
 export default function WorkspaceSwitcher() {
-   const { data: workspaces } = useGetWorkspaces();
    const router = useRouter();
    const workspaceId = useWorkspaceId();
+   const { data: workspaces } = useGetWorkspaces();
    const { open } = useCreateWorkspaceModal();
 
    function onSelect(id: string) {

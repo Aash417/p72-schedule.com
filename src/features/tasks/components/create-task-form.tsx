@@ -28,7 +28,6 @@ import { TaskStatus } from '@/features/tasks/types';
 import { useWorkspaceId } from '@/features/workspaces/hooks/use-workspace-id';
 import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -44,8 +43,6 @@ export default function CreateTaskForm({
    memberOptions,
 }: Readonly<Props>) {
    const workspaceId = useWorkspaceId();
-
-   const queryClient = useQueryClient();
    const { mutate, isPending } = useCreateTask();
 
    const form = useForm<z.infer<typeof createTasksSchema>>({
@@ -62,7 +59,6 @@ export default function CreateTaskForm({
             onSuccess: () => {
                form.reset();
                onCancel?.();
-               queryClient.invalidateQueries({ queryKey: ['tasks'] });
             },
          },
       );

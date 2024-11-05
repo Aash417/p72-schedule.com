@@ -17,10 +17,8 @@ import { createWorkspacesSchema } from '@/features/workspaces/schemas';
 import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Avatar, AvatarFallback } from '@radix-ui/react-avatar';
-import { useQueryClient } from '@tanstack/react-query';
 import { ImageIcon } from 'lucide-react';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
 import { useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -28,10 +26,8 @@ import { z } from 'zod';
 export default function CreateWorkspaceForm({
    onCancel,
 }: Readonly<{ onCancel?: () => void }>) {
-   const router = useRouter();
-   const queryClient = useQueryClient();
-   const { mutate: createWorkspace, isPending } = useCreateWorkspace();
    const fileInputRef = useRef<HTMLInputElement>(null);
+   const { mutate: createWorkspace, isPending } = useCreateWorkspace();
 
    const form = useForm<z.infer<typeof createWorkspacesSchema>>({
       resolver: zodResolver(createWorkspacesSchema),
@@ -45,14 +41,11 @@ export default function CreateWorkspaceForm({
          ...values,
          image: values.image instanceof File ? values.image : '',
       };
-
       createWorkspace(
          { form: finalValues },
          {
-            onSuccess: ({ data }) => {
+            onSuccess: () => {
                form.reset();
-               router.push(`/workspaces/${data.$id}`);
-               queryClient.invalidateQueries({ queryKey: ['workspaces'] });
             },
          },
       );

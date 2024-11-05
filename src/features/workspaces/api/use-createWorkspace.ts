@@ -8,8 +8,8 @@ type ResponseType = InferResponseType<(typeof client.api.workspaces)['$post']>;
 type RequestType = InferRequestType<(typeof client.api.workspaces)['$post']>;
 
 export function useCreateWorkspace() {
-   const queryClient = useQueryClient();
    const router = useRouter();
+   const queryClient = useQueryClient();
 
    const mutation = useMutation<ResponseType, Error, RequestType>({
       mutationFn: async ({ form }) => {
@@ -18,12 +18,11 @@ export function useCreateWorkspace() {
 
          return await response.json();
       },
-      onSuccess: () => {
+      onSuccess: ({ data }) => {
          toast.success('Workspace created');
-         queryClient.invalidateQueries({
-            queryKey: ['workspaces', 'workspace'],
-         });
-         router.refresh();
+         queryClient.invalidateQueries({ queryKey: ['workspaces'] });
+
+         router.push(`/workspaces/${data.$id}`);
       },
       onError: () => {
          toast.error('Failed to create workspace');

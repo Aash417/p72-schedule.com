@@ -15,10 +15,11 @@ type Props = {
 };
 
 export default function TaskBreadcrumb({ task }: Readonly<Props>) {
-   const { project } = task;
-   const workspaceId = useWorkspaceId();
-   const { mutate: deleteTask, isPending: isDeletingTask } = useDeleteTask();
    const router = useRouter();
+   const workspaceId = useWorkspaceId();
+   const { project } = task;
+
+   const { mutate: deleteTask, isPending: isDeletingTask } = useDeleteTask();
    const [ConfirmDeleteTask, confirmDelete] = UseConfirm(
       'Delete Task',
       'This action cannot be undone',

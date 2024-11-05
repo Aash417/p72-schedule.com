@@ -38,6 +38,7 @@ export default function EditProjectForm({
 }: Readonly<Props>) {
    const router = useRouter();
    const fileInputRef = useRef<HTMLInputElement>(null);
+
    const form = useForm<z.infer<typeof updateProjectsSchema>>({
       resolver: zodResolver(updateProjectsSchema),
       defaultValues: {
@@ -50,6 +51,7 @@ export default function EditProjectForm({
       'This action cannot be undone',
       'destructive',
    );
+
    const { mutate: updateProject, isPending: isUpdatingProject } =
       useUpdateProject();
    const { mutate: deleteProject, isPending: isDeletingProject } =

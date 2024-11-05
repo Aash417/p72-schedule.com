@@ -30,8 +30,9 @@ export default function CreateProjectForm({
 }: Readonly<{ onCancel?: () => void }>) {
    const router = useRouter();
    const workspaceId = useWorkspaceId();
-   const { mutate, isPending } = useCreateProject();
    const fileInputRef = useRef<HTMLInputElement>(null);
+
+   const { mutate, isPending } = useCreateProject();
 
    const form = useForm<z.infer<typeof createProjectsSchema>>({
       resolver: zodResolver(createProjectsSchema.omit({ workspaceId: true })),

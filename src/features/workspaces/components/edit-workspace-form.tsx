@@ -21,7 +21,6 @@ import UseConfirm from '@/hooks/use-confirm';
 import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Avatar, AvatarFallback } from '@radix-ui/react-avatar';
-import { useQueryClient } from '@tanstack/react-query';
 import { ArrowLeftIcon, CopyIcon, ImageIcon } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -30,7 +29,6 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
-type WorkspaceSchema = typeof updateWorkspacesSchema;
 type EditWorkspaceFormProps = {
    onCancel?: () => void;
    initialValues: Workspace;
@@ -42,7 +40,6 @@ export default function EditWorkspaceForm({
 }: Readonly<EditWorkspaceFormProps>) {
    const router = useRouter();
    const fileInputRef = useRef<HTMLInputElement>(null);
-   const queryClient = useQueryClient();
    const fullInviteLink = `${window.location.origin}/workspaces/${initialValues.$id}/join/${initialValues.inviteCode}`;
 
    const [DeleteDialog, confirmDelete] = UseConfirm(
@@ -62,8 +59,10 @@ export default function EditWorkspaceForm({
       useDeleteWorkspace();
    const { mutate: resetInviteCode, isPending: isResettingInviteCode } =
       useResetInviteCode();
+   const isLoading =
+      isUpdatingWorkspace || isDeletingWorkspace || isResettingInviteCode;
 
-   const form = useForm<z.infer<WorkspaceSchema>>({
+   const form = useForm<z.infer<typeof updateWorkspacesSchema>>({
       resolver: zodResolver(updateWorkspacesSchema),
       defaultValues: {
          ...initialValues,
@@ -77,18 +76,10 @@ export default function EditWorkspaceForm({
          image: values.image instanceof File ? values.image : '',
       };
 
-      updateWorkspace(
-         { form: finalValues, param: { workspaceId: initialValues.$id } },
-         {
-            onSuccess: ({ data }) => {
-               form.reset();
-               queryClient.invalidateQueries({
-                  queryKey: ['workspaces', 'workspace', data.$id],
-               });
-               router.refresh();
-            },
-         },
-      );
+      updateWorkspace({
+         form: finalValues,
+         param: { workspaceId: initialValues.$id },
+      });
    }
 
    function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -183,8 +174,8 @@ export default function EditWorkspaceForm({
                                              src={
                                                 field.value instanceof File
                                                    ? URL.createObjectURL(
-                                                        field.value,
-                                                     )
+                                                      field.value,
+                                                   )
                                                    : field.value
                                              }
                                              alt="logo"
@@ -209,13 +200,13 @@ export default function EditWorkspaceForm({
                                           accept=".jpg, .png, .jpeg, .svg"
                                           className="hidden"
                                           ref={fileInputRef}
-                                          disabled={isUpdatingWorkspace}
+                                          disabled={isLoading}
                                           onChange={handleImageChange}
                                        />
                                        {field.value ? (
                                           <Button
                                              type="button"
-                                             disabled={isUpdatingWorkspace}
+                                             disabled={isLoading}
                                              variant="destructive"
                                              size="xs"
                                              onClick={() => {
@@ -231,7 +222,7 @@ export default function EditWorkspaceForm({
                                        ) : (
                                           <Button
                                              type="button"
-                                             disabled={isUpdatingWorkspace}
+                                             disabled={isLoading}
                                              variant="teritrary"
                                              size="xs"
                                              onClick={() =>
@@ -256,16 +247,13 @@ export default function EditWorkspaceForm({
                            size="lg"
                            variant="secondary"
                            onClick={onCancel}
-                           disabled={isUpdatingWorkspace}
+                           disabled={isLoading}
                            className={cn(!onCancel && 'invisible')}
                         >
                            Cancel
                         </Button>
 
-                        <Button
-                           size="lg"
-                           disabled={isUpdatingWorkspace || isDeletingWorkspace}
-                        >
+                        <Button size="lg" disabled={isLoading}>
                            Save changes
                         </Button>
                      </div>
@@ -299,11 +287,7 @@ export default function EditWorkspaceForm({
                      size="sm"
                      variant="destructive"
                      type="button"
-                     disabled={
-                        isUpdatingWorkspace ||
-                        isDeletingWorkspace ||
-                        isResettingInviteCode
-                     }
+                     disabled={isLoading}
                      onClick={handleResetInviteCode}
                   >
                      Reset invite link
@@ -326,7 +310,7 @@ export default function EditWorkspaceForm({
                      size="sm"
                      variant="destructive"
                      type="button"
-                     disabled={isUpdatingWorkspace || isDeletingWorkspace}
+                     disabled={isLoading}
                      onClick={handleDelete}
                   >
                      Delete workspace
