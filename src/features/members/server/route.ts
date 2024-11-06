@@ -1,6 +1,6 @@
 import { DATABASE_ID, MEMBERS_ID } from '@/config';
+import { Member, MemberRole } from '@/features/members/types';
 import { getMember } from '@/features/members/utils';
-import { MemberRole } from '@/features/workspaces/types';
 import { createAdminClient } from '@/lib/appwrite';
 import { sessionMiddleware } from '@/lib/session-middleware';
 import { zValidator } from '@hono/zod-validator';
@@ -26,7 +26,7 @@ const app = new Hono()
          });
          if (!member) return c.json({ error: 'unauthorized' }, 401);
 
-         const members = await databases.listDocuments(
+         const members = await databases.listDocuments<Member>(
             DATABASE_ID,
             MEMBERS_ID,
             [Query.equal('workspaceId', workspaceId)],
