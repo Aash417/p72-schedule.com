@@ -292,7 +292,12 @@ const app = new Hono()
                error: 'all task must belong to the same workshop',
             });
 
-         const workspaceId = workspaceIds.values().next().value!;
+         const workspaceId = workspaceIds.values().next().value;
+         if (!workspaceId)
+            return c.json({
+               error: 'workspace id is required',
+            });
+
          const member = await getMember({
             databases,
             workspaceId,

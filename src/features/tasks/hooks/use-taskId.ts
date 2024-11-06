@@ -1,7 +1,7 @@
 import { useParams } from 'next/navigation';
 
 export const useTaskId = () => {
-   const params = useParams();
+   const { taskId } = useParams();
 
-   return params.taskId as string;
+   return taskId as string;
 };

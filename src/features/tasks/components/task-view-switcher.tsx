@@ -3,6 +3,7 @@
 import { DottedSeparator } from '@/components/dotted-separator';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useProjectId } from '@/features/projects/hooks/use-projectId';
 import { useBuldUpdateTask } from '@/features/tasks/api/use-bulkUpdateTask';
 import { useGetTasks } from '@/features/tasks/api/use-getTasks';
 import { columns } from '@/features/tasks/components/columns';
@@ -23,6 +24,7 @@ type Props = {
 };
 
 export default function TaskViewSwitcher({ hideProjectFilter }: Props) {
+   const paramProjectId = useProjectId();
    const { open } = useCreateTaskModal();
    const [view, setView] = useQueryState('task-view', {
       defaultValue: 'table',
@@ -34,7 +36,7 @@ export default function TaskViewSwitcher({ hideProjectFilter }: Props) {
    const workspaceId = useWorkspaceId();
    const { data: tasks, isLoading: isLoadingTasks } = useGetTasks({
       workspaceId,
-      projectId,
+      projectId: paramProjectId || projectId,
       assigneeId,
       status,
       dueDate,
