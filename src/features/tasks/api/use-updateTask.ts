@@ -29,6 +29,7 @@ export function useUpdateTask() {
          queryClient.invalidateQueries({ queryKey: ['task'] });
          queryClient.invalidateQueries({ queryKey: ['tasks'] });
          queryClient.invalidateQueries({ queryKey: ['project-analytics'] });
+         queryClient.invalidateQueries({ queryKey: ['workspace-analytics'] });
       },
       onError: () => {
          toast.error('Failed to update task');

@@ -25,6 +25,8 @@ export function useBuldUpdateTask() {
       onSuccess: () => {
          toast.success('Task updated');
          queryClient.invalidateQueries({ queryKey: ['tasks'] });
+         queryClient.invalidateQueries({ queryKey: ['project-analytics'] });
+         queryClient.invalidateQueries({ queryKey: ['workspace-analytics'] });
       },
       onError: () => {
          toast.error('Failed to update task');

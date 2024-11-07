@@ -12,7 +12,7 @@ type RequestType = InferRequestType<
 >;
 
 export function useDeleteTask() {
-   const queryclient = useQueryClient();
+   const queryClient = useQueryClient();
 
    const mutation = useMutation<ResponseType, Error, RequestType>({
       mutationFn: async ({ param }) => {
@@ -25,7 +25,9 @@ export function useDeleteTask() {
       },
       onSuccess: () => {
          toast.success('Task deleted');
-         queryclient.invalidateQueries({ queryKey: ['tasks'] });
+         queryClient.invalidateQueries({ queryKey: ['tasks'] });
+         queryClient.invalidateQueries({ queryKey: ['project-analytics'] });
+         queryClient.invalidateQueries({ queryKey: ['workspace-analytics'] });
       },
       onError: () => {
          toast.error('Failed to delete task');

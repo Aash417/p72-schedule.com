@@ -19,9 +19,7 @@ export function useLogout() {
       },
       onSuccess: () => {
          toast.success('Logged out');
-         queryClient.invalidateQueries({
-            queryKey: ['current', 'workspaces', 'workspace'],
-         });
+         queryClient.invalidateQueries();
          router.refresh();
       },
       onError: () => {
