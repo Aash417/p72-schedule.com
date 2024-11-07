@@ -25,6 +25,7 @@ import { z } from 'zod';
 import { useRegister } from '../api/use-register';
 import { SignUpSchema } from '../schemas';
 import { useRouter } from 'next/navigation';
+import { signUpWithGoogle } from '@/lib/oauth';
 
 export const SignUpCard = () => {
    const { mutate, isPending } = useRegister();
@@ -133,9 +134,14 @@ export const SignUpCard = () => {
                <DottedSeparator />
             </div>
             <CardContent>
-               <Button variant="secondary" size="lg" className="w-full">
+               <Button
+                  onClick={() => signUpWithGoogle()}
+                  variant="secondary"
+                  size="lg"
+                  className="w-full"
+               >
                   <FcGoogle className="mr-2 size-5" />
-                  Login with Google
+                  Signup with Google
                </Button>
             </CardContent>
          </div>

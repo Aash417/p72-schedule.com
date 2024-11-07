@@ -9,7 +9,16 @@ export default function Sidebar() {
    return (
       <aside className="h-full w-full bg-neutral-100 p-4">
          <Link href="/">
-            <Image src="/logo.svg" alt="logo" width={164} height={48} />
+            <div className="relative flex flex-row items-center gap-1 text-lg font-semibold">
+               <Image
+                  src="/logo.svg"
+                  alt="logo"
+                  width={90}
+                  height={48}
+                  className="m-0 p-0"
+               />
+               <span className="absolute left-14 flex">Schedule.com</span>
+            </div>
          </Link>
          <DottedSeparator className="my-4" />
 

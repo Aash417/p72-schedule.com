@@ -1,5 +1,6 @@
 'use client';
 
+import { signUpWithGoogle } from '@/lib/oauth';
 import { DottedSeparator } from '@/components/dotted-separator';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -91,6 +92,7 @@ export const SignInCard = () => {
             </div>
             <CardContent>
                <Button
+                  onClick={() => signUpWithGoogle()}
                   disabled={isPending}
                   variant="secondary"
                   size="lg"
