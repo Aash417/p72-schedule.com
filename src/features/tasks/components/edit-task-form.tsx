@@ -126,7 +126,7 @@ export default function EditTaskForm({
                               >
                                  <FormControl>
                                     <SelectTrigger>
-                                       <SelectValue placeholder="Selece assginee" />
+                                       <SelectValue placeholder="Select assginee" />
                                     </SelectTrigger>
                                  </FormControl>
                                  <FormMessage />
@@ -163,7 +163,7 @@ export default function EditTaskForm({
                               >
                                  <FormControl>
                                     <SelectTrigger>
-                                       <SelectValue placeholder="Selece status" />
+                                       <SelectValue placeholder="Select status" />
                                     </SelectTrigger>
                                  </FormControl>
                                  <FormMessage />
@@ -202,7 +202,7 @@ export default function EditTaskForm({
                               >
                                  <FormControl>
                                     <SelectTrigger>
-                                       <SelectValue placeholder="Selece project" />
+                                       <SelectValue placeholder="Select project" />
                                     </SelectTrigger>
                                  </FormControl>
                                  <FormMessage />
